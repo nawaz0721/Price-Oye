@@ -37,7 +37,6 @@ onAuthStateChanged(auth, (user) => {
         console.log("User is signed in");
         loginBtn.style.display = 'none';
         userImage.style.display = 'block';
-        getUserInfo(user.uid);
         getMyProduct(user.uid);
     } else {
         console.log("User is signed out");

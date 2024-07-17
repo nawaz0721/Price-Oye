@@ -64,7 +64,6 @@ signupbtn.addEventListener('click', () =>{
         // Signed in
         const user = userCredential.user;
         console.log(user);
-        alert("User successfully log In");
         window.location.href = "../index.html";
         // ...
         })
