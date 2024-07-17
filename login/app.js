@@ -39,74 +39,75 @@ onAuthStateChanged(auth, (user) => {
   });
 
   
-signupbtn.addEventListener('click', () =>{
-    const email = signEmail.value
-    const password = signPass.value
-      createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-          // Signed in
-          const user = userCredential.user;
-          console.log(user);
-          image();
-          alert("User successfully created");
-      })
-      .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-              console.log(errorCode);
-              console.log(errorMessage);
-          });
-  });
+  signupbtn.addEventListener('click', () => {
+    const email = signEmail.value;
+    const password = signPass.value;
+    createUserWithEmailAndPassword(auth, email, password)
+        .then(async (userCredential) => {
+            const user = userCredential.user;
+            const profileImageRef = ref(storage, `profiles/${user.uid}/${userProfile.files[0].name}`);
+            await uploadBytes(profileImageRef, userProfile.files[0]);
+            const profileImageUrl = await getDownloadURL(profileImageRef);
 
-  logbtn.addEventListener('click', () =>{
-      signInWithEmailAndPassword(auth, logEmail.value, logPass.value)
-    .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        console.log(user);
-        window.location.href = "../index.html";
-        // ...
+            await addDoc(collection(db, "users"), {
+                uid: user.uid,
+                name: signName.value,
+                email: signEmail.value,
+                profileImageUrl: profileImageUrl,
+            });
+
+            console.log("User successfully created");
+            alert("User successfully created");
         })
         .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorCode);
-            console.log(errorMessage);
+            console.error(error.code, error.message);
         });
 });
 
-const image = () =>{
-    console.log(userProfile.files[0]);
-    
-    const profileImageRef = ref(storage , userProfile.files[0].name);
-    console.log(profileImageRef);
-    console.log(userProfile.files[0].name);
-
-    signupbtn.disabled = true;
-    uploadBytes(profileImageRef, userProfile.files[0]).then((snapshot) => {
-        console.log('Uploaded a blob or file!');
-
-        getDownloadURL(profileImageRef)
-        .then((url) => {
-            console.log("url ==>",url)
-
-    const userInfo = collection(db, "users");
-            addDoc(userInfo, {
-                Name: signName.value,
-                Email: signEmail.value,
-                Password: signPass.value,
-                profile: url,
-            }).then(()=>{
-                console.log("Document updated to the DB");
-                signupbtn.disabled = false;
-            })
+logbtn.addEventListener('click', () => {
+    signInWithEmailAndPassword(auth, logEmail.value, logPass.value)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            console.log("User signed in", user);
+            window.location.href = "../index.html";
         })
-        .catch((error) => console.log("Error in download ==>",error));
-      })
-    .catch((e) => {
-        console.log(e)
-    });
+        .catch((error) => {
+            console.error(error.code, error.message);
+        });
+});
+
+// const image = () =>{
+//     console.log(userProfile.files[0]);
+    
+//     const profileImageRef = ref(storage , userProfile.files[0].name);
+//     console.log(profileImageRef);
+//     console.log(userProfile.files[0].name);
+
+//     signupbtn.disabled = true;
+//     uploadBytes(profileImageRef, userProfile.files[0]).then((snapshot) => {
+//         console.log('Uploaded a blob or file!');
+
+//         getDownloadURL(profileImageRef)
+//         .then((url) => {
+//             console.log("url ==>",url)
+
+//     const userInfo = collection(db, "users");
+//             addDoc(userInfo, {
+//                 Name: signName.value,
+//                 Email: signEmail.value,
+//                 Password: signPass.value,
+//                 profile: url,
+//             }).then(()=>{
+//                 console.log("Document updated to the DB");
+//                 signupbtn.disabled = false;
+//             })
+//         })
+//         .catch((error) => console.log("Error in download ==>",error));
+//       })
+//     .catch((e) => {
+//         console.log(e)
+//     });
    
-}
+// }
 
 

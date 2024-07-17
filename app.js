@@ -45,7 +45,7 @@ onAuthStateChanged(auth, (user) => {
       console.log(user);
     loginBtn.style.display = 'none';
     userImage.style.display = 'block';
-    getUserInfo(uid);
+    getUserInfo(user.uid);
       } else {
         // User is signed out
         console.log("User is signed Out");
@@ -67,17 +67,21 @@ myProduct.addEventListener('click', ()=>{
     window.location.href = "/myProduct/index.html";
 })
 
-function getUserInfo(uid){
-    const userRef = getDocs(db, 'users', uid);
-    getDoc(userRef)
-    .then((data) => {
-        console.log(data);
-        console.log(data.id);
-        console.log(data.data());
+function getUserInfo(uid) {
+    const userRef = query(collection(db, 'users'), where('uid', '==', uid));
+    getDocs(userRef)
+        .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                const userData = doc.data();
+                userName.textContent = userData.name;
+                userEmail.textContent = userData.email;
+                userImage.src = userData.profileImageUrl;
+                // userDropdown.style.display = 'block';
+            });
         })
         .catch((error) => {
-            console.log(error.message);
-    })
+            console.error(error.message);
+        });
 }
 
 async function getAllProduct(){
