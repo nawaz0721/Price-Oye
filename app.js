@@ -76,7 +76,6 @@ function getUserInfo(uid) {
                 userName.textContent = userData.name;
                 userEmail.textContent = userData.email;
                 userImage.src = userData.profileImageUrl;
-                // userDropdown.style.display = 'block';
             });
         })
         .catch((error) => {

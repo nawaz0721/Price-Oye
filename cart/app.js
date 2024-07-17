@@ -53,6 +53,22 @@ loginBtn.addEventListener('click', ()=>{
     window.location.href = "../login/index.html";
 })
 
+function getUserInfo(uid) {
+    const userRef = query(collection(db, 'users'), where('uid', '==', uid));
+    getDocs(userRef)
+        .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                const userData = doc.data();
+                userName.textContent = userData.name;
+                userEmail.textContent = userData.email;
+                userImage.src = userData.profileImageUrl;
+            });
+        })
+        .catch((error) => {
+            console.error(error.message);
+        });
+}
+
 async function getCartedProducts(uid) {
     try {
         const q = query(collection(db, 'Products'), where("cart", "array-contains", uid));
